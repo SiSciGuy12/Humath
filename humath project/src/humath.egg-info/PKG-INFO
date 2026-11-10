@@ -1,0 +1,422 @@
+Metadata-Version: 2.4
+Name: humath
+Version: 1.0.0
+Summary: A dependency-free Python math library focusing on high precision and lisening to what the comunity actualy wants.
+Author-email: Silas Rose <silasmrose@gmail.com>
+License: MIT
+Project-URL: Homepage, https://github.com
+Project-URL: Issues, https://github.com/issues
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Intended Audience :: Developers
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Dynamic: license-file
+
+# humath
+
+A dependency-free Python math library focusing on high precision and lisening to what the comunity actualy wants.
+Request functions/bug fixes here: https://forms.gle/LQRApJU8G9tMvrD37
+See the docs here
+### Change log:
+#### 1.0.0:
+##### Added
+- Official Release
+- Initial stable release of the full `humath` core library.
+- Dependency-free implementations of continuous and discrete math primitives.
+- Precision floating-point deconstruction layers (`fma`, `frexp`, `ldexp`).
+- Advanced statistical vector analysis suite (`mean`, `median`, `variance`, etc.).
+- Logarithmic-time number theory operations (`fibonacci_nth`, `is_prime`).
+- Comprehensive markdown docstring coverage for all native utility functions.
+
+## docs
+# 🧮 humath
+
+**humath** is a high-precision, production-grade, outside dependency-free mathematical and statistical utility library for Python. It provides pure-Python implementations of advanced algebraic, trigonometric, statistical, combinatoric, and number-theoretic functions. The entire suite is engineered from the ground up to bypass traditional binary floating-point limitations, rounding errors, and stack depth issues by manipulating numeric properties directly at the algorithmic level.
+
+### 👥 Community-Centered Development
+This project is completely driven by the community! If you have ideas for new functions, want to see specific mathematical features added, or need to report a calculation bug, please submit your feedback directly through our **[Community Change Request Form](https://forms.gle/9F6DMJdhBT9mLZE46)**.
+
+---
+
+## 🚀 1. Architecture & Core Design Philosophy
+
+To remain completely decoupled from Python’s native compiled C-extensions (`math`, `cmath`) and external data-science packages (`numpy`, `scipy`), **humath** relies on four architectural pillars built entirely on raw Python abstractions:
+
+### I. Newton-Raphson Optimization with Hexadecimal Seeding
+Logarithmic, continuous root, and inverse hyperbolic functions calculate continuous limits natively without lookup tables. Instead of arbitrary guesses, initial values are derived via string parsing from Python's exact 64-bit float configuration method (`float.hex()`). These seeds undergo fixed iterative updates to reach stable machine decimal convergence within five cycles.
+
+### II. Catastrophic Cancellation Guards
+Standard mathematical Taylor series lose significant accuracy near critical zero boundaries due to floating-point truncation shifts. **humath** implements hardware-level safety checks on input vectors. If a magnitude drops below an absolute threshold (e.g., $10^{-4}$ or $10^{-5}$), the system automatically swaps its core engine out for high-order polynomial expansions tailored for sub-boundary convergence.
+
+### III. Infinite-Precision Rational Arithmetic
+For operations requiring exact intermediate values, inputs are dynamically translated into their strict fractional numerators and denominators (`as_integer_ratio()`). Calculations are processed as exact rational calculations over arbitrary-precision integers before a single, final rounding operation is applied. This eliminates compounding rounding errors across complex calculations.
+
+### IV. Logarithmic Matrix Fast-Doubling
+Discrete sequences avoid traditional linear addition loops and deep recursion trees that risk crashing the interpreter's stack. Iterations are processed using matrix fast-doubling identities shifted via bitwise masks (`<<`, `>>`). This reduces computational time from linear ($O(n)$) to logarithmic ($O(\log n)$), allowing the library to handle multi-thousand-digit integers instantly.
+
+---
+
+## 📦 2. Global Package Constants
+
+The package pre-defines several high-precision mathematical metrics as static elements to optimize execution speeds:
+
+*   **`PI`**: `3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825341170679`
+*   **`E`**: `2.7182818284590452353602874713526624977572470936999595749669676277240766303535475945713821785251664274`
+*   **`TAU`**: `6.2831853071795864769252867665590057683943387987502116419498891846156328125724179972560696506842341359`
+*   **`GOLDEN_RATIO`**: `1.6180339887498948482045868343656381177203091798057628621354486227052604628189024497072072041893911374`
+*   **`INF`**: Representing positive infinity (`float('inf')`).
+*   **`NAN`**: Representing an undefined value string (`float('nan')`).
+*   **`deg_to_rad_constant`**: Radian multiplier per degree (`0.017453292519943295...`).
+*   **`rad_to_deg_constant`**: Degree multiplier per radian (`57.29577951308232...`).
+## 🛠️ 3. Exhaustive API Reference
+
+### Domain A: Precision Primitives & Float Deconstruction
+
+#### `is_close(a: float, b: float, rel_tol: float = 1e-09) -> bool`
+Checks whether two floating-point values are within a specified relative tolerance, bypassing binary approximation anomalies. Returns `True` if conditions are met, otherwise `False`. If both inputs are exactly `0`, it safely resolves to `True`.
+
+#### `lerp(start: float, end: float, t: float) -> float`
+Calculates linear interpolation between two values based on a tracking percentage fraction `t`. Evaluates as $\text{start} + t \times (\text{end} - \text{start})$.
+
+#### `fma(x: float, y: float, z: float) -> float`
+**Fused Multiply-Add**. Computes $(x \times y) + z$ using full rational fraction transformations (`as_integer_ratio()`) to maintain infinite intermediate precision. A single rounding operation is applied at the final exit boundary to eliminate compounding calculation drift.
+
+#### `copysign(x: float, y: float) -> float`
+Extracts the absolute magnitude of $x$ and applies the positive or negative sign of $y$. String parsing techniques are used to ensure signed zeroes (`-0.0`) are captured correctly.
+
+#### `nextafter(x: float, y: float) -> float`
+Finds the adjacent representable double-precision floating-point value next to $x$ when stepping in the direction of $y$. Handles edge-case limits such as NaN values and transitions through subnormal numbers smoothly.
+
+#### `frexp(x: float) -> tuple[float, int]`
+Deconstructs a float $x$ into a normalized mantissa fraction in the range $[0.5, 1.0)$ and a matching integral power of 2, satisfying $x = \text{mantissa} \times 2^{\text{exponent}}$. Subnormal numbers are normalized internally using binary conversion logic.
+
+#### `ldexp(x: float, i: int) -> float`
+The exact inverse of `frexp`. Reassembles a float from a mantissa $x$ and exponent $i$ by modifying the binary exponent configuration directly via string manipulation. It catches overflow limits and maps underflows safely to signed zeroes.
+
+---
+
+### Domain B: General Arithmetic & Structural Bounds
+
+#### `add(*args: float) -> float`
+Sequentially sums an arbitrary sequence of numeric parameters.
+
+#### `subtract(a: float, b: float) -> float`
+Calculates the exact difference between two numbers ($a - b$).
+
+#### `multiply(*args: float) -> float`
+Calculates the sequential product of an arbitrary list of numeric parameters.
+
+#### `divide(numerator: float, denominator: float) -> float | None`
+Divides a numerator by a denominator. Includes protective logic that logs a warning and returns `None` if the denominator is `0`, preventing runtime crashes.
+
+#### `absolute(number: float) -> float`
+Returns the absolute non-negative magnitude of a number ($|x|$).
+
+#### `ceil(n: float) -> int`
+Rounds a number up to the next consecutive whole integer.
+
+#### `floor(n: float) -> int`
+Rounds a number down to the previous consecutive whole integer.
+
+#### `truncate(n: float) -> int`
+Chops off the decimal portion of a number entirely, rounding it directly toward zero.
+
+#### `round_half_up(n: float, digits: int = 0) -> float | int`
+Bypasses Python's default "Banker's Rounding" logic. Implements standard mathematical rounding, where half-values ($0.5$) always round up toward positive infinity. Includes a microscopic adjustment buffer ($10^{-12}$) to correct for binary float drift prior to rounding.
+
+#### `modulo(a: float, b: float) -> float`
+Calculates the remainder of a division using floored division logic, ensuring the resulting sign matches the divisor $b$. Raises a `ZeroDivisionError` if $b$ is zero.
+
+#### `divmod_tuple(a: float, b: float) -> tuple[float, float]`
+Simultaneously evaluates and returns the floored quotient and remainder of $a / b$ as a tuple.
+
+#### `reciprocal(n: float) -> float`
+Calculates the multiplicative inverse of a number ($1 / n$). Maps infinity values to signed zeroes to maintain strict IEEE-754 compatibility.
+
+#### `negate(n: float) -> float`
+Flips the sign of a number, mapping positive values to negative and vice versa while preserving signed zero properties.
+
+#### `clamp(val: float, min_val: float, max_val: float) -> float`
+Constrains a value within a specified range, snapping the value directly to the upper or lower boundary if it overflows.
+
+---
+
+### Domain C: Exponential, Root, & Logarithmic Engines
+
+#### `square(n: float) -> float`
+Multiplies a value by itself to compute its second power ($n^2$).
+
+#### `cube(n: float) -> float`
+Computes the third power of a number ($n^3$), preserving negative signs.
+
+#### `power(base: float, exponent: float) -> float`
+Raises a base number to an arbitrary exponent power ($base^{exponent}$).
+
+#### `sqrt(n: float) -> float`
+Extracts the principal square root of a non-negative number ($\sqrt{n}$). Raises a `ValueError` for negative inputs.
+
+#### `cbrt(n: float) -> float`
+Extracts the cube root ($\sqrt{n}$). Supports negative numbers natively over real numbers by maintaining structural signs.
+
+#### `nth_root(n: float, root: int) -> float`
+Extracts an arbitrary principal $n$-th root. Even roots of negative numbers raise a `ValueError`, whereas odd roots handle negative signs natively.
+
+#### `hypot(*args: float) -> float`
+Computes the Euclidean norm (the square root of the sum of squares) for an arbitrary list of dimensions. Automatically scales parameters down by their maximum value before squaring to prevent hardware-level float overflows.
+
+#### `exp(n: float) -> float`
+Computes $e^n$ using a high-precision constant approximation of Euler's number. Maps infinite boundaries directly to infinity or zero.
+
+#### `expm1(n: float) -> float`
+Calculates $e^n - 1$. Employs a 5-term Taylor series expansion when $n$ is close to zero ($|n| < 10^{-5}$) to prevent catastrophic floating-point cancellation errors.
+
+#### `log(n: float, base: float = 2.718281828459045) -> float`
+Calculates the logarithm of a number for a custom base. It extracts initial baseline hints from binary exponents and utilizes 5 iterations of Newton-Raphson optimization to achieve full 64-bit precision before applying the change-of-base formula.
+
+#### `log10(n: float) -> float`
+Calculates the common base-10 logarithm using high-efficiency Newton-Raphson optimizations.
+
+#### `log2(n: float) -> float`
+Calculates the binary base-2 logarithm using high-efficiency Newton-Raphson optimizations.
+
+#### `log1p(n: float) -> float`
+Calculates $\ln(1 + n)$. Switches to a 5-term Taylor series configuration when inputs are close to zero ($|n| < 10^{-4}$) to prevent precision loss.
+
+---
+
+### Domain D: Trigonometric & Hyperbolic Wave Systems
+
+#### `degrees_to_radians(deg: float) -> float`
+Converts angular metrics from degrees to radians.
+
+#### `radians_to_degrees(rad: float) -> float`
+Converts angular metrics from radians to degrees.
+
+#### `sin(rad: float) -> float`
+Calculates the trigonometric sine of an angle. Normalizes inputs by mapping large or negative angles onto a standard $[0, \tau)$ circle sweep before running an alternating Taylor series expansion.
+
+#### `cos(rad: float) -> float`
+Calculates the trigonometric cosine of an angle by mapping inputs onto a $[0, \tau)$ circle sweep and running a high-speed alternating Taylor series loop.
+
+#### `tan(rad: float) -> float | None`
+Calculates the trigonometric tangent ($\sin(\text{rad}) / \cos(\text{rad})$). Returns `None` at undefined boundaries where the cosine engine drops to zero.
+
+#### `asin(n: float) -> float | None`
+Calculates the inverse arcsine, returning values in the principal range $[-\pi/2, \pi/2]$. If the input values approach steep circle horizons ($|n| > 0.5$), it applies a square-root reduction identity to preserve calculation stability.
+
+#### `acos(n: float) -> float | None`
+Calculates the inverse arccosine by applying the mathematical identity $\arccos(x) = \pi/2 - \arcsin(x)$.
+
+#### `atan(n: float) -> float`
+Calculates the inverse arctangent, returning values in the range $[-\pi/2, \pi/2]$. Maps large ratios back into stable convergence windows using reciprocal mapping transformations.
+
+#### `atan2(y: float, x: float) -> float`
+Calculates the full 4-quadrant arctangent for coordinate pairs $(x, y)$, returning values in the range $[-\pi, \pi]$. Handles vertical trajectory lines where $x = 0$ safely without division crashes.
+
+#### `sinh(n: float) -> float`
+Calculates the hyperbolic sine ($[e^n - e^{-n}] / 2$), protecting infinite boundaries from hardware overflows.
+
+#### `cosh(n: float) -> float`
+Calculates the hyperbolic cosine ($[e^n + e^{-n}] / 2$).
+
+#### `tanh(n: float) -> float`
+Calculates the hyperbolic tangent ($\sinh(n) / \cosh(n)$), bounding results within a strict $[-1.0, 1.0]$ envelope.
+
+#### `asinh(n: float) -> float`
+Calculates the inverse hyperbolic sine using the log transformation identity $\ln(n + \sqrt{n^2 + 1})$. Processes values symmetrically around zero to preserve accuracy.
+
+#### `acosh(n: float) -> float | None`
+Calculates the inverse hyperbolic cosine using the identity $\ln(n + \sqrt{n^2 - 1})$. Restricts inputs to values $\ge 1.0$.
+### Domain E: Statistical Vector Analysis
+
+#### `mean(data: list[float]) -> float | None`
+Computes the arithmetic average of a dataset. Returns `None` if the dataset is empty.
+
+#### `median(data: list[float]) -> float | None`
+Locates the true central value of a dataset. Sorts values internally using a pure-Python insertion sort to protect the user's original data structure from mutation.
+
+#### `mode(data: list[float]) -> float | None`
+Identifies the most frequently occurring value in a dataset. Ties are resolved by returning the first dominant peak encountered.
+
+#### `minimum(data: list[float]) -> float | None`
+Scans a vector collection to isolate the lowest numerical value.
+
+#### `maximum(data: list[float]) -> float | None`
+Scans a vector collection to isolate the highest numerical value.
+
+#### `range_span(data: list[float]) -> float | None`
+Calculates the absolute data spread by evaluating $\text{maximum} - \text{minimum}$.
+
+#### `sum_of_squares(data: list[float]) -> float | None`
+Squares every item in a collection and sums the accumulated results.
+
+#### `variance(data: list[float]) -> float | None`
+Computes the unbiased sample variance of a dataset by calculating squared deviations from the mean and dividing by $N - 1$.
+
+#### `std_deviation(data: list[float]) -> float | None`
+Calculates the sample standard deviation by evaluating the principal square root of the unbiased sample variance.
+
+#### `quantiles(data: list[float], n: int = 4) -> list[float] | None`
+Divides a dataset into $n$ equally sized intervals, returning the exact $n-1$ intermediate cutoff thresholds using linear interpolation.
+
+#### `percentile(data: list[float], p: float) -> float | None`
+Calculates the cutoff threshold below which a given percentage $p$ ($0.0 \le p \le 100.0$) of data falls, using linear interpolation between adjacent elements.
+
+#### `harmonic_mean(data: list[float]) -> float | None`
+Computes the harmonic mean of a dataset, restricting entries to positive values $> 0.0$.
+
+#### `geometric_mean(data: list[float]) -> float | None`
+Computes the geometric mean by accumulating natural logarithms to protect intermediate values from multiplication overflows, then re-exponentiating the average.
+
+#### `dot_product(vector_a: list[float], vector_b: list[float]) -> float | None`
+Computes the scalar dot product of two vectors. Verifies that both vectors are non-empty and share identical lengths.
+
+#### `normalize_array(data: list[float]) -> list[float] | None`
+Performs linear Min-Max Scaling to transform any numerical distribution into a strict $[0.0, 1.0]$ envelope. Flat datasets where all elements are identical return an array of zeroes to prevent division-by-zero crashes.
+
+---
+
+### Domain F: Discrete Combinatorics & Geometry
+
+#### `area_circle(radius: float) -> float | None`
+Calculates circle area ($\pi r^2$), validating that the radius is non-negative.
+
+#### `circumference(radius: float) -> float | None`
+Calculates circle perimeter ($\tau r$), optimizing computation speed by using the pre-defined $\tau$ constant.
+
+#### `area_triangle(base: float, height: float) -> float | None`
+Calculates triangle area ($0.5 \times \text{base} \times \text{height}$).
+
+#### `perimeter_triangle(a: float, b: float, c: float) -> float | None`
+Calculates triangle perimeter ($a + b + c$). Includes geometric verification checks to ensure the inputs comply with the Triangle Inequality Theorem.
+
+#### `distance_2d(p1: tuple[float, float], p2: tuple[float, float]) -> float`
+Calculates the straight-line Euclidean distance between two coordinate pairs on a 2D plane.
+
+#### `factorial(n: int) -> int`
+Computes $n!$ using a highly efficient iterative accumulator loop that avoids recursion limits. Raises a `ValueError` for negative parameters.
+
+#### `gcd(a: int, b: int) -> int`
+Finds the largest positive common divisor using the Euclidean algorithm.
+
+#### `lcm(a: int, b: int) -> int`
+Finds the least common multiple using the identity $|a \times b| / \text{gcd}(a, b)$.
+
+#### `is_prime(n: int) -> bool`
+Evaluates primality using an optimized $6k \pm 1$ trial division algorithm bounded to the integer ceiling of $\sqrt{n}$.
+
+#### `next_prime(n: int) -> int`
+Locates the immediate prime number strictly greater than $n$.
+
+#### `factors(n: int) -> list[int]`
+Compiles a sorted list of all valid divisors for an integer using square-root short-circuiting.
+
+#### `prime_factors(n: int) -> list[int]`
+Decomposes an integer into its sequential prime components.
+
+#### `permutations(n: int, r: int) -> int`
+Calculates the number of unique ordered arrangements when selecting $r$ items out of a pool of $n$, evaluating as $n! / (n - r)!$ without running full factorials.
+
+#### `combinations(n: int, r: int) -> int`
+Calculates the number of unique unordered subsets when selecting $r$ items out of $n$.
+
+#### `fibonacci_nth(n: int) -> int`
+Finds the Fibonacci number at position $n$. It utilizes a logarithmic fast-doubling matrix bit-shifting algorithm ($O(\log n)$) to handle massive values instantly without recursion limits.
+
+#### `is_coprime(a: int, b: int) -> bool`
+Checks whether two integers are relatively prime, meaning they share no common positive factors other than 1 ($\text{gcd}(a, b) == 1$).
+
+#### `is_perfect_number(n: int) -> bool`
+Checks whether an integer matches the sum of its proper positive divisors.
+
+#### `binomial_coefficient(n: int, k: int) -> int`
+Computes positions inside Pascal's Triangle ($n \text{ choose } k$), utilizing structural symmetry optimizations to minimize iteration cycles.
+
+#### `catalan_number(n: int) -> int`
+Computes positions in the Catalan sequence using a direct product formulation engine to eliminate heavy factorial steps.
+
+#### `floor_divide(a: float, b: float) -> int`
+Divides $a$ by $b$ and applies a floor operation, ensuring rounding consistency across negative coordinate spaces.
+---
+
+## 💡 4. Complete Verification Test Suites
+
+To verify package reliability, you can save the following test file as `test_humath.py` and run it via `pytest` to validate precision limits and edge cases:
+
+```python
+import pytest
+import humath
+
+def test_precision_fma_and_close():
+    # Test standard binary floating point drift resolution
+    assert 0.1 + 0.2 != 0.3
+    assert humath.is_close(0.1 + 0.2, 0.3) == True
+    
+    # Test Fused Multiply-Add precision bounds
+    res = humath.fma(1.23456789, 9.87654321, 0.00001)
+    expected = (123456789 * 987654321) / (10**8 * 10**8) + 1 / 10**5
+    assert humath.is_close(res, expected)
+
+def test_logarithmic_and_exponential_taylor_guards():
+    # Test expm1 cancellation guard on ultra-tiny values
+    tiny_val = 1e-15
+    assert humath.is_close(humath.expm1(tiny_val), tiny_val, rel_tol=1e-12)
+    
+    # Test log1p cancellation guard near zero boundary
+    assert humath.is_close(humath.log1p(tiny_val), tiny_val, rel_tol=1e-12)
+
+def test_fibonacci_fast_doubling_performance():
+    # Verify exact small sequence targets
+    assert humath.fibonacci_nth(0) == 0
+    assert humath.fibonacci_nth(1) == 1
+    assert humath.fibonacci_nth(6) == 8
+    assert humath.fibonacci_nth(10) == 55
+    
+    # Validate that multi-hundred digit computations complete instantly
+    large_fib = humath.fibonacci_nth(1000)
+    assert isinstance(large_fib, int)
+    assert len(str(large_fib)) == 209
+
+def test_number_theory_and_discrete_systems():
+    assert humath.is_prime(2) == True
+    assert humath.is_prime(11) == True
+    assert humath.is_prime(4) == False
+    assert humath.next_prime(14) == 17
+    assert humath.factors(24) == [1, 2, 3, 4, 6, 8, 12, 24]
+    assert humath.prime_factors(24) == [2, 2, 2, 3]
+    assert humath.is_coprime(14, 15) == True
+    assert humath.is_coprime(14, 21) == False
+
+def test_statistical_vector_tendencies():
+    data = [2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0]
+    assert humath.mean(data) == 5.0
+    assert humath.median(data) == 4.5
+    assert humath.mode(data) == 4.0
+    assert humath.variance(data) == 4.5
+    assert humath.std_deviation(data) == 4.5 ** 0.5
+    assert humath.normalize_array(data) == [0.0, 0.25, 0.5, 0.75, 1.0]
+```
+
+---
+
+## ⚖️ 5. License
+This library is distributed completely free as open-source software under the terms of the **MIT License**.
+
+## Installation
+```bash
+pip install humath
+```
+
+## Quick Start
+```python
+import humath
+print(humath.fibonacci_nth(10)) # Returns 55
+```

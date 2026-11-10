@@ -1,0 +1,9 @@
+LICENSE
+README.md
+pyproject.toml
+src/humath/__init__.py
+src/humath/core.py
+src/humath.egg-info/PKG-INFO
+src/humath.egg-info/SOURCES.txt
+src/humath.egg-info/dependency_links.txt
+src/humath.egg-info/top_level.txt

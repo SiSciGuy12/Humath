@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "humath"
+version = "1.0.0"
+authors = [
+  { name="Silas Rose", email="silasmrose@gmail.com" },
+]
+description = "A dependency-free Python math library focusing on high precision and lisening to what the comunity actualy wants."
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Developers",
+]
+dependencies = [
+    #none
+]
+
+[project.urls]
+Homepage = "https://github.com"
+Issues = "https://github.com/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
