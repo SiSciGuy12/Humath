@@ -3858,3 +3858,4 @@ def floor_divide(a: float, b: float) -> int:
         raise ZeroDivisionError("integer division or modulo by zero")
         
     return int(a // b)
+

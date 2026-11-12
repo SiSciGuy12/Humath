@@ -1,11 +1,17 @@
 # humath
 
-A dependency-free Python math library focusing on high precision and lisening to what the comunity actualy wants.
+A dependency-free Python math library focusing on high precision and listening to what the community actually wants.
 Request functions/bug fixes here: https://forms.gle/LQRApJU8G9tMvrD37
 See the docs here
-### Change log:
-#### 1.0.0:
-##### Added
+# Change log:
+## 1.0.2
+### Fixed
+- Re released through Github Verified Publishers
+## 1.0.1
+### Fixed
+- Made the hover text hints and examples actually show up.
+## 1.0.0:
+### Added
 - Official Release
 - Initial stable release of the full `humath` core library.
 - Dependency-free implementations of continuous and discrete math primitives.
@@ -56,8 +62,6 @@ The package pre-defines several high-precision mathematical metrics as static el
 *   **`rad_to_deg_constant`**: Degree multiplier per radian (`57.29577951308232...`).
 ## 🛠️ 3. Exhaustive API Reference
 
-### Domain A: Precision Primitives & Float Deconstruction
-
 #### `is_close(a: float, b: float, rel_tol: float = 1e-09) -> bool`
 Checks whether two floating-point values are within a specified relative tolerance, bypassing binary approximation anomalies. Returns `True` if conditions are met, otherwise `False`. If both inputs are exactly `0`, it safely resolves to `True`.
 
@@ -80,8 +84,6 @@ Deconstructs a float $x$ into a normalized mantissa fraction in the range $[0.5,
 The exact inverse of `frexp`. Reassembles a float from a mantissa $x$ and exponent $i$ by modifying the binary exponent configuration directly via string manipulation. It catches overflow limits and maps underflows safely to signed zeroes.
 
 ---
-
-### Domain B: General Arithmetic & Structural Bounds
 
 #### `add(*args: float) -> float`
 Sequentially sums an arbitrary sequence of numeric parameters.
@@ -127,8 +129,6 @@ Constrains a value within a specified range, snapping the value directly to the 
 
 ---
 
-### Domain C: Exponential, Root, & Logarithmic Engines
-
 #### `square(n: float) -> float`
 Multiplies a value by itself to compute its second power ($n^2$).
 
@@ -169,8 +169,6 @@ Calculates the binary base-2 logarithm using high-efficiency Newton-Raphson opti
 Calculates $\ln(1 + n)$. Switches to a 5-term Taylor series configuration when inputs are close to zero ($|n| < 10^{-4}$) to prevent precision loss.
 
 ---
-
-### Domain D: Trigonometric & Hyperbolic Wave Systems
 
 #### `degrees_to_radians(deg: float) -> float`
 Converts angular metrics from degrees to radians.
@@ -213,7 +211,7 @@ Calculates the inverse hyperbolic sine using the log transformation identity $\l
 
 #### `acosh(n: float) -> float | None`
 Calculates the inverse hyperbolic cosine using the identity $\ln(n + \sqrt{n^2 - 1})$. Restricts inputs to values $\ge 1.0$.
-### Domain E: Statistical Vector Analysis
+
 
 #### `mean(data: list[float]) -> float | None`
 Computes the arithmetic average of a dataset. Returns `None` if the dataset is empty.
@@ -260,9 +258,6 @@ Computes the scalar dot product of two vectors. Verifies that both vectors are n
 #### `normalize_array(data: list[float]) -> list[float] | None`
 Performs linear Min-Max Scaling to transform any numerical distribution into a strict $[0.0, 1.0]$ envelope. Flat datasets where all elements are identical return an array of zeroes to prevent division-by-zero crashes.
 
----
-
-### Domain F: Discrete Combinatorics & Geometry
 
 #### `area_circle(radius: float) -> float | None`
 Calculates circle area ($\pi r^2$), validating that the radius is non-negative.
